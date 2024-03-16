@@ -53,7 +53,25 @@ int main()
 	for (QGHW::ListIterator<Entity> it = l.Begin(); it != l.End(); it++) {
 		std::cout << *it << std::endl;
 	}
+	std::cout << std::endl;
 	std::cout << l.Size() << std::endl;
+	for (int i = 0; i < 2; i++) {
+		l.PopFront();
+	}
+	for (int i = 0; i < 2; i++) {
+		l.PopBack();
+	}
+	for (QGHW::ListIterator<Entity> it = l.Begin(); it != l.End(); it++) {
+		std::cout << *it << std::endl;
+	}
+	std::cout << std::endl;
+	std::cout << l.Size() << std::endl;
+	l.insert(l.Begin(), Entity(0, 0));
+	l.insert(++l.Begin(), 3, Entity(10, 10));
+	for (QGHW::ListIterator<Entity> it = l.Begin(); it != l.End(); it++) {
+		std::cout << *it << std::endl;
+	}
+
 }
 
 

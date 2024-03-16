@@ -36,13 +36,18 @@ template <typename T>
 class Node
 {
 public:
-	T m_Data;	//存储数据
-	Node* m_Next;	//指向下一个节点
-	Node* m_Pre;	//指向上一个节点
+	typedef Node<T> this_type;
 
 public:
-	Node();
-	Node(const T& value, Node* pre, Node* next);
+	T m_Data;	//存储数据
+	this_type* m_Next;	//指向下一个节点
+	this_type* m_Pre;	//指向上一个节点
+
+public:
+	inline Node();
+	inline Node(const T& value);
+	inline Node(const T& value, this_type* pre, this_type* next);
+	inline void insert(this_type* next);
 };
 
 
@@ -54,7 +59,7 @@ public:
  *  @name        : inline Node<T>::Node()
  *	@description : 节点的默认构造函数
  *	@param		 : None
- *	@return		 : Node
+ *	@return		 : None
  *  @notice      : None
  */
 template <typename T>
@@ -62,16 +67,42 @@ inline Node<T>::Node()
 	:m_Next(nullptr), m_Pre(nullptr) {}
 
 /**
- *  @name        : void DestroyList_DuL(DuLinkedList *L)
- *	@description : destroy a linked list
- *	@param		 : L(the head node)
+ *  @name        : inline Node<T>::Node(const T& value)
+ *	@description : 有参构造
+ *	@param		 : const T& value
  *	@return		 : status
  *  @notice      : None
  */
 template <typename T>
-inline Node<T>::Node(const T& value, Node* pre, Node* next)
+inline Node<T>::Node(const T& value)
+	:m_Data(value), m_Pre(nullptr), m_Next(nullptr) {}
+
+/**
+ *  @name        : inline Node<T>::Node(const T& value, this_type* pre, this_type* next)
+ *	@description : 有参构造
+ *	@param		 : const T& value, this_type* pre, this_type* next
+ *	@return		 : None
+ *  @notice      : None
+ */
+template <typename T>
+inline Node<T>::Node(const T& value, this_type* pre, this_type* next)
 	:m_Data(value), m_Pre(pre), m_Next(next) {}
 
+/**
+ *  @name        : inline void Node<T>::insert(this_type* next)
+ *	@description : 将节点插入next之前
+ *	@param		 : this_type* next
+ *	@return		 : None
+ *  @notice      : None
+ */
+template <typename T>
+inline void Node<T>::insert(this_type* next)
+{
+	m_Next = next;
+	m_Pre = next->m_Pre;
+	next->m_Pre->m_Next = this;
+	next->m_Pre = this;
+}
 
 /**************************************************************
 *	Struct Define Section
@@ -173,6 +204,10 @@ public:
 	inline T& Back()const;
 	inline void PushBack(const T& value);
 	inline void PushFront(const T& value);
+	inline void PopBack();
+	inline void PopFront();
+	inline iterator insert(iterator pos, const T& value);
+	inline iterator insert(iterator pos, size_t num, const T& value);
 
 private:
 	inline Node<T>* allocate_memory();
@@ -367,6 +402,75 @@ inline void LinkList<T>::PushFront(const T& value)
 	m_Size++;
 }
 	
+/**
+*  @name        : inline void LinkList<T>::PopBack()
+*  @description : 尾部删除元素
+*  @param		: None
+*  @return		: None
+*  @notice      : None
+*/
+template <typename T>
+inline void LinkList<T>::PopBack()
+{
+	assert(!IsEmpty());
+	node_type* node = m_Tail;
+	m_Tail = m_Tail->m_Pre;
+	m_Tail->m_Next = node->m_Next;
+	delete node;
+	node = nullptr;
+	m_Size--;
+}
+
+/**
+*  @name        : inline void LinkList<T>::PopFront()
+*  @description : 头部删除元素
+*  @param		: None
+*  @return		: None
+*  @notice      : None
+*/
+template <typename T>
+inline void LinkList<T>::PopFront()
+{
+	assert(!IsEmpty());
+	node_type* node = m_Head->m_Next;
+	m_Head->m_Next = node->m_Next;
+	if (node->m_Next) {
+		node->m_Next->m_Pre = m_Head;	//更新前驱元
+	}
+	delete node;
+	node = nullptr;
+	m_Size--;
+}
+
+/**
+*  @name        : typename inline ListIterator<T> LinkList<T>::insert(ListIterator<T> pos, const T& value)
+*  @description : 在pos前插入value
+*  @param		: ListIterator<T> pos, const T& value
+*  @return		: None
+*  @notice      : None
+*/
+template <typename T>
+typename inline ListIterator<T> LinkList<T>::insert(ListIterator<T> pos, const T& value)
+{
+	node_type* node = new node_type(value);
+	node->insert(pos.m_Pointer);
+	m_Size++;
+	return iterator(node);
+}
+
+template <typename T>
+typename inline ListIterator<T> LinkList<T>::insert(ListIterator<T> pos, size_t num, const T& value)
+{
+	iterator it(pos);
+	--it;
+	for (; num > 0; num--) {
+		insert(pos, value);
+	}
+	return ++it;
+}
+
+
+
 
 
 }
