@@ -280,6 +280,10 @@ inline LinkList<T>::LinkList(const T& value)
 template <typename T>
 inline LinkList<T>::~LinkList()
 {
+	clear();
+	delete m_Head;
+	m_Head = nullptr;
+	m_Tail = nullptr;
 }
 	
 /**

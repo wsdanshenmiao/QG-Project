@@ -118,8 +118,6 @@ void test1()
 		std::cout << *it << std::endl;
 	}
 	std::cout << "Size: " << l.Size() << std::endl;
-
-
 }
 
 
