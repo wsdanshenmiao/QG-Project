@@ -49,7 +49,7 @@ void test1()
 	std::cout << *l.Begin() << std::endl;
 	std::cout << l.Front() << std::endl;
 	std::cout << l.Back() << std::endl;
-	for (QGHW::ListIterator<Entity> it = l.Begin(); it != l.End(); it++) {
+	for (QGHW::LinkList<Entity>::iterator it = l.Begin(); it != l.End(); it++) {
 		std::cout << *it << std::endl;
 	}
 	std::cout << std::endl;
@@ -61,7 +61,7 @@ void test1()
 	for (int i = 0; i < 2; i++) {
 		l.PopBack();
 	}
-	for (QGHW::ListIterator<Entity> it = l.Begin(); it != l.End(); it++) {
+	for (QGHW::LinkList<Entity>::iterator it = l.Begin(); it != l.End(); it++) {
 		std::cout << *it << std::endl;
 	}
 	std::cout << std::endl;
@@ -73,7 +73,7 @@ void test1()
 	l.insert(l.Begin(), Entity(0, 0));
 	l.insert(++l.Begin(), 3, Entity(10, 10));
 	l.insert(l.Begin(), std::move(Entity(9, 9)));
-	for (QGHW::ListIterator<Entity> it = l.Begin(); it != l.End(); it++) {
+	for (QGHW::LinkList<Entity>::iterator it = l.Begin(); it != l.End(); it++) {
 		std::cout << *it << std::endl;
 	}
 

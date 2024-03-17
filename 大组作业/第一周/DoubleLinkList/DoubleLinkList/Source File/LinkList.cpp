@@ -109,80 +109,7 @@ inline void Node<T>::insert(this_type* next)
 *	Struct Define Section
 **************************************************************/
 
-template <typename T>
-class LinkList;
 
-//链表迭代器
-template <typename T>
-class ListIterator
-{
-public:
-	typedef ListIterator<T> iterator;
-	typedef Node<T> node_type;
-
-public:
-	ListIterator()
-		:m_Pointer(nullptr) {}
-	ListIterator(node_type* pointer)
-		:m_Pointer(pointer) {}
-	ListIterator(const iterator& it)
-		:m_Pointer(it.m_Pointer) {}
-	~ListIterator() {}
-
-	//解引用操作符
-	inline T& operator*()const
-	{
-		return m_Pointer->m_Data;
-	}
-
-	inline T& operator->()const
-	{
-		return &(m_Pointer->m_Data);
-	}
-
-	//迭代器前置加加,链表的迭代器为双向迭代器，只能前移后移，不可跳跃式增减
-	inline iterator& operator++()
-	{
-		this->m_Pointer = this->m_Pointer->m_Next;
-		return *this;
-	}
-	//后置加加,不能返回局部数据的引用
-	inline iterator operator++(int)
-	{
-		iterator tmp = *this;
-		++(*this);
-		return tmp;
-	}
-
-	//前置减减
-	inline iterator& operator--()
-	{
-
-		this->m_Pointer = this->m_Pointer->m_Pre;
-
-		return *this;
-	}
-	//后置减减
-	inline iterator operator--(int)
-	{
-		iterator tmp = *this;
-		--(*this);
-		return tmp;
-	}
-
-	//迭代器比较
-	inline bool operator==(const iterator& right)const
-	{
-		return m_Pointer == right.m_Pointer;
-	}
-	inline bool operator!=(const iterator& right)const
-	{
-		return !(*this == right);
-	}
-
-public:
-	node_type* m_Pointer;
-};
 
 
 /**************************************************************
@@ -195,7 +122,76 @@ class LinkList
 {
 public:
 	typedef Node<T> node_type;
-	typedef ListIterator<T> iterator;
+	//链表迭代器
+	class iterator
+	{
+	public:
+		typedef Node<T> node_type;
+
+	public:
+		iterator()
+			:m_Pointer(nullptr) {}
+		iterator(node_type* pointer)
+			:m_Pointer(pointer) {}
+		iterator(const iterator& it)
+			:m_Pointer(it.m_Pointer) {}
+		~iterator() {}
+
+		//解引用操作符
+		inline T& operator*()const
+		{
+			return m_Pointer->m_Data;
+		}
+
+		inline T& operator->()const
+		{
+			return &(m_Pointer->m_Data);
+		}
+
+		//迭代器前置加加,链表的迭代器为双向迭代器，只能前移后移，不可跳跃式增减
+		inline iterator& operator++()
+		{
+			this->m_Pointer = this->m_Pointer->m_Next;
+			return *this;
+		}
+		//后置加加,不能返回局部数据的引用
+		inline iterator operator++(int)
+		{
+			iterator tmp = *this;
+			++(*this);
+			return tmp;
+		}
+
+		//前置减减
+		inline iterator& operator--()
+		{
+
+			this->m_Pointer = this->m_Pointer->m_Pre;
+
+			return *this;
+		}
+		//后置减减
+		inline iterator operator--(int)
+		{
+			iterator tmp = *this;
+			--(*this);
+			return tmp;
+		}
+
+		//迭代器比较
+		inline bool operator==(const iterator& right)const
+		{
+			return m_Pointer == right.m_Pointer;
+		}
+		inline bool operator!=(const iterator& right)const
+		{
+			return !(*this == right);
+		}
+
+	public:
+		node_type* m_Pointer;
+	};
+
 
 public:
 	LinkList();	//默认构造
@@ -218,9 +214,6 @@ public:
 	inline iterator insert(iterator pos, T&& value);
 	inline iterator erase(iterator pos);
 	inline iterator erase(iterator first, iterator last);
-
-	template <typename T>
-	friend class LintIterator;
 
 private:
 	node_type* m_Head;	//链表的头节点	
@@ -323,7 +316,7 @@ inline size_t LinkList<T>::Size()const
 *  @notice      : None
 */
 template <typename T>
-typename inline ListIterator<T> LinkList<T>::Begin()const
+typename inline LinkList<T>::iterator LinkList<T>::Begin()const
 {
 	if (IsEmpty()) {
 		return End();
@@ -341,7 +334,7 @@ typename inline ListIterator<T> LinkList<T>::Begin()const
 	知道原因了，加加后成了空指针，Begin()加加最后也会成空指针，所以迭代就停了，但这样无法让迭代器前移。
 */
 template <typename T>
-typename inline ListIterator<T> LinkList<T>::End()const
+typename inline LinkList<T>::iterator LinkList<T>::End()const
 {
 	assert(!IsEmpty());
 	iterator it(m_Tail);
@@ -465,7 +458,7 @@ inline void LinkList<T>::PopFront()
 *  @notice      : 由此了解到可变模板参数，但不是很了解，所以没有应用
 */
 template <typename T>
-inline ListIterator<T> LinkList<T>::empalce(ListIterator<T> pos, T&& value)
+typename inline LinkList<T>::iterator LinkList<T>::empalce(iterator pos, T&& value)
 {
 	node_type* node = allocate_memory<node_type>(sizeof(node_type));	//使用全局new分配内存
 	new ((void*) &(node->m_Data)) T(value);	//手动构造函数
@@ -482,7 +475,7 @@ inline ListIterator<T> LinkList<T>::empalce(ListIterator<T> pos, T&& value)
 *  @notice      : None
 */
 template <typename T>
-typename inline ListIterator<T> LinkList<T>::insert(ListIterator<T> pos, const T& value)
+typename inline LinkList<T>::iterator LinkList<T>::insert(iterator pos, const T& value)
 {
 	node_type* node = new node_type(value);
 	node->insert(pos.m_Pointer);
@@ -498,7 +491,7 @@ typename inline ListIterator<T> LinkList<T>::insert(ListIterator<T> pos, const T
 *  @notice      : None
 */
 template <typename T>
-typename inline ListIterator<T> LinkList<T>::insert(ListIterator<T> pos, size_t num, const T& value)
+typename inline LinkList<T>::iterator LinkList<T>::insert(iterator pos, size_t num, const T& value)
 {
 	iterator it(pos);
 	--it;	//偏移到插入点的前一个迭代器
@@ -516,7 +509,7 @@ typename inline ListIterator<T> LinkList<T>::insert(ListIterator<T> pos, size_t 
 *  @notice      : None
 */
 template <typename T>
-typename inline ListIterator<T> LinkList<T>::insert(ListIterator<T> pos, T&& value)
+typename inline LinkList<T>::iterator LinkList<T>::insert(iterator pos, T&& value)
 {
 	return empalce(pos, std::move(value));
 }
@@ -529,7 +522,7 @@ typename inline ListIterator<T> LinkList<T>::insert(ListIterator<T> pos, T&& val
 *  @notice      : None
 */
 template <typename T>
-typename inline ListIterator<T> LinkList<T>::erase(ListIterator<T> pos)
+typename inline LinkList<T>::iterator LinkList<T>::erase(iterator pos)
 {
 	assert(!IsEmpty());
 	node_type* node = pos.m_Pointer;
