@@ -36,8 +36,7 @@ std::ostream& operator<<(std::ostream& stream, const Entity& e)
 	return stream;
 }
 
-#if 1
-int main()
+void test1()
 {
 	QGHW::LinkList<Entity> l;
 	std::cout << l.IsEmpty() << std::endl;
@@ -55,6 +54,7 @@ int main()
 	}
 	std::cout << std::endl;
 	std::cout << l.Size() << std::endl;
+
 	for (int i = 0; i < 2; i++) {
 		l.PopFront();
 	}
@@ -66,8 +66,13 @@ int main()
 	}
 	std::cout << std::endl;
 	std::cout << l.Size() << std::endl;
+
+	while(!l.IsEmpty()){
+		l.erase(l.Begin());
+	}
 	l.insert(l.Begin(), Entity(0, 0));
 	l.insert(++l.Begin(), 3, Entity(10, 10));
+	l.insert(l.Begin(), std::move(Entity(9, 9)));
 	for (QGHW::ListIterator<Entity> it = l.Begin(); it != l.End(); it++) {
 		std::cout << *it << std::endl;
 	}
@@ -75,8 +80,7 @@ int main()
 }
 
 
-#else
-int main()
+void test2()
 {
 	std::list<int> l;
 	for (int i = 0; i < 5; i++) {
@@ -87,6 +91,8 @@ int main()
 	}
 }
 
-#endif // 0
-
+int main()
+{
+	test1();
+}
 

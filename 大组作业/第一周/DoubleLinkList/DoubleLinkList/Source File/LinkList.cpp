@@ -1,4 +1,5 @@
 #include <assert.h>
+#include <iostream>
 
 /***************************************************************************************
  *	File Name				:	LinkList.hpp
@@ -108,6 +109,9 @@ inline void Node<T>::insert(this_type* next)
 *	Struct Define Section
 **************************************************************/
 
+template <typename T>
+class LinkList;
+
 //链表迭代器
 template <typename T>
 class ListIterator
@@ -153,7 +157,9 @@ public:
 	//前置减减
 	inline iterator& operator--()
 	{
+
 		this->m_Pointer = this->m_Pointer->m_Pre;
+
 		return *this;
 	}
 	//后置减减
@@ -206,11 +212,15 @@ public:
 	inline void PushFront(const T& value);
 	inline void PopBack();
 	inline void PopFront();
+	inline iterator empalce(iterator pos, T&& value);
 	inline iterator insert(iterator pos, const T& value);
 	inline iterator insert(iterator pos, size_t num, const T& value);
+	inline iterator insert(iterator pos, T&& value);
+	inline iterator erase(iterator pos);
+	inline iterator erase(iterator first, iterator last);
 
-private:
-	inline Node<T>* allocate_memory();
+	template <typename T>
+	friend class LintIterator;
 
 private:
 	node_type* m_Head;	//链表的头节点	
@@ -230,10 +240,10 @@ private:
  *	@return		 : static_cast<node_type*>(::operator new(sizeof(node_type)));
  *  @notice      : None
  */
-template <typename T>
-inline Node<T>* LinkList<T>::allocate_memory()
+template <typename Type>
+inline static Type* allocate_memory(const size_t& size)
 {
-	return static_cast<node_type*>(::operator new(sizeof(node_type)));
+	return static_cast<Type*>(::operator new(size));
 }
 	
 /**
@@ -247,8 +257,9 @@ template <typename T>
 inline LinkList<T>::LinkList()
 	:m_Size(0)
 {
-	m_Head = allocate_memory();	//创建头节点
-
+	m_Head = allocate_memory<node_type>(sizeof(node_type));	//创建头节点
+	m_Head->m_Next = nullptr;
+	m_Head->m_Pre = nullptr;
 	m_Tail = m_Head;
 }
 /**
@@ -314,7 +325,9 @@ inline size_t LinkList<T>::Size()const
 template <typename T>
 typename inline ListIterator<T> LinkList<T>::Begin()const
 {
-	assert(!IsEmpty());
+	if (IsEmpty()) {
+		return End();
+	}
 	return iterator(m_Head->m_Next);
 }
 	
@@ -331,7 +344,9 @@ template <typename T>
 typename inline ListIterator<T> LinkList<T>::End()const
 {
 	assert(!IsEmpty());
-	return ++iterator(m_Tail);
+	iterator it(m_Tail);
+	++it;
+	return it;
 }
 	
 /**
@@ -443,6 +458,23 @@ inline void LinkList<T>::PopFront()
 }
 
 /**
+*  @name        : inline ListIterator<T> LinkList<T>::empalce(iterator pos, T&& value)
+*  @description : pos前就地构造对象
+*  @param		: ListIterator<T> pos, T&& value
+*  @return		: iterator(pos.m_Pointer->m_Pre)
+*  @notice      : 由此了解到可变模板参数，但不是很了解，所以没有应用
+*/
+template <typename T>
+inline ListIterator<T> LinkList<T>::empalce(ListIterator<T> pos, T&& value)
+{
+	node_type* node = allocate_memory<node_type>(sizeof(node_type));	//使用全局new分配内存
+	new ((void*) &(node->m_Data)) T(value);	//手动构造函数
+	node->insert(pos.m_Pointer);
+	m_Size++;
+	return iterator(pos.m_Pointer->m_Pre);
+}
+
+/**
 *  @name        : typename inline ListIterator<T> LinkList<T>::insert(ListIterator<T> pos, const T& value)
 *  @description : 在pos前插入value
 *  @param		: ListIterator<T> pos, const T& value
@@ -458,17 +490,61 @@ typename inline ListIterator<T> LinkList<T>::insert(ListIterator<T> pos, const T
 	return iterator(node);
 }
 
+/**
+*  @name        : typename inline ListIterator<T> LinkList<T>::insert(ListIterator<T> pos, size_t num, const T& value)
+*  @description : 在pos前插入num个value
+*  @param		: ListIterator<T> pos, size_t num, const T& value
+*  @return		: ++it
+*  @notice      : None
+*/
 template <typename T>
 typename inline ListIterator<T> LinkList<T>::insert(ListIterator<T> pos, size_t num, const T& value)
 {
 	iterator it(pos);
-	--it;
+	--it;	//偏移到插入点的前一个迭代器
 	for (; num > 0; num--) {
 		insert(pos, value);
 	}
 	return ++it;
 }
 
+/**
+*  @name        : typename inline ListIterator<T> LinkList<T>::insert(ListIterator<T> pos, const T&& value)
+*  @description : 在pos前插入value,右值版本
+*  @param		: ListIterator<T> pos, const T&& value
+*  @return		: ++it
+*  @notice      : None
+*/
+template <typename T>
+typename inline ListIterator<T> LinkList<T>::insert(ListIterator<T> pos, T&& value)
+{
+	return empalce(pos, std::move(value));
+}
+
+/**
+*  @name        : typename inline ListIterator<T> erase(ListIterator<T> pos)
+*  @description : 删除pos处的元素
+*  @param		: ListIterator<T> pos, const T&& value
+*  @return		: 最后移除后的迭代器
+*  @notice      : None
+*/
+template <typename T>
+typename inline ListIterator<T> LinkList<T>::erase(ListIterator<T> pos)
+{
+	assert(!IsEmpty());
+	node_type* node = pos.m_Pointer;
+	++pos;
+	node->m_Pre->m_Next = node->m_Next;
+	if (node->m_Next) {	//不是尾节点
+		node->m_Next->m_Pre = node->m_Pre;
+	}
+	else {	//更新尾节点
+		m_Tail = node->m_Pre;
+	}
+	delete node;
+	m_Size--;
+	return iterator(pos);
+}
 
 
 
