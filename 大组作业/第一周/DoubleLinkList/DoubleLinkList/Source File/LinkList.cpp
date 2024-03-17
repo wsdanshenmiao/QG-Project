@@ -105,11 +105,6 @@ inline void Node<T>::insert(this_type* next)
 	next->m_Pre = this;
 }
 
-/**************************************************************
-*	Struct Define Section
-**************************************************************/
-
-
 
 
 /**************************************************************
@@ -165,9 +160,7 @@ public:
 		//前置减减
 		inline iterator& operator--()
 		{
-
 			this->m_Pointer = this->m_Pointer->m_Pre;
-
 			return *this;
 		}
 		//后置减减
@@ -214,6 +207,13 @@ public:
 	inline iterator insert(iterator pos, T&& value);
 	inline iterator erase(iterator pos);
 	inline iterator erase(iterator first, iterator last);
+	inline void clear();
+	inline void resize(size_t size);
+	inline void resize(size_t size, const T& value);
+
+
+private:
+	inline void _Resize(size_t size, const T& value);
 
 private:
 	node_type* m_Head;	//链表的头节点	
@@ -309,7 +309,7 @@ inline size_t LinkList<T>::Size()const
 }
 	
 /**
-*  @name        : typename inline ListIterator<T> LinkList<T>::Begin()const
+*  @name        : inline LinkList<T>::iterator LinkList<T>::Begin()const
 *  @description : 返回首节点的迭代器
 *  @param		: None
 *  @return		: iterator(m_Head->m_Next)
@@ -325,20 +325,19 @@ typename inline LinkList<T>::iterator LinkList<T>::Begin()const
 }
 	
 /**
-*  @name        : typename inline ListIterator<T> LinkList<T>::End()const
+*  @name        : inline LinkList<T>::iterator LinkList<T>::End()const
 *  @description : 返回最后一个元素下一个位置的迭代器
 *  @param		: None
 *  @return		: ++iterator(m_Tail)
 *  @notice      : 不知道该怎么实现原本功能的End()就自定义了指向最后一个元素。
 	随后发现把最后一个元素的迭代器加加一下就能达到预期的效果，虽然不知道原因，但只能将就着用。
 	知道原因了，加加后成了空指针，Begin()加加最后也会成空指针，所以迭代就停了，但这样无法让迭代器前移。
+	最后决定定义成指向尾节点
 */
 template <typename T>
 typename inline LinkList<T>::iterator LinkList<T>::End()const
 {
-	assert(!IsEmpty());
 	iterator it(m_Tail);
-	++it;
 	return it;
 }
 	
@@ -451,7 +450,7 @@ inline void LinkList<T>::PopFront()
 }
 
 /**
-*  @name        : inline ListIterator<T> LinkList<T>::empalce(iterator pos, T&& value)
+*  @name        : inline LinkList<T>::iterator LinkList<T>::empalce(iterator pos, T&& value)
 *  @description : pos前就地构造对象
 *  @param		: ListIterator<T> pos, T&& value
 *  @return		: iterator(pos.m_Pointer->m_Pre)
@@ -462,13 +461,23 @@ typename inline LinkList<T>::iterator LinkList<T>::empalce(iterator pos, T&& val
 {
 	node_type* node = allocate_memory<node_type>(sizeof(node_type));	//使用全局new分配内存
 	new ((void*) &(node->m_Data)) T(value);	//手动构造函数
-	node->insert(pos.m_Pointer);
+	if (!IsEmpty()) {
+		node->insert(pos.m_Pointer);
+	}
+	else {
+		node->m_Next = m_Head->m_Next;
+		node->m_Pre = m_Head;
+		m_Head->m_Next = node;
+	}
+	if (!node->m_Next) {	//更新尾节点
+		m_Tail = node;
+	}
 	m_Size++;
 	return iterator(pos.m_Pointer->m_Pre);
 }
 
 /**
-*  @name        : typename inline ListIterator<T> LinkList<T>::insert(ListIterator<T> pos, const T& value)
+*  @name        : inline LinkList<T>::iterator LinkList<T>::insert(iterator pos, const T& value)
 *  @description : 在pos前插入value
 *  @param		: ListIterator<T> pos, const T& value
 *  @return		: None
@@ -478,13 +487,23 @@ template <typename T>
 typename inline LinkList<T>::iterator LinkList<T>::insert(iterator pos, const T& value)
 {
 	node_type* node = new node_type(value);
-	node->insert(pos.m_Pointer);
+	if (IsEmpty()) {
+		node->m_Next = m_Head->m_Next;
+		node->m_Pre = m_Head;
+		m_Head->m_Next = node;
+	}
+	else {
+		node->insert(pos.m_Pointer);
+	}
+	if (!node->m_Next) {	//更新节点
+		m_Tail = node;
+	}
 	m_Size++;
 	return iterator(node);
 }
 
 /**
-*  @name        : typename inline ListIterator<T> LinkList<T>::insert(ListIterator<T> pos, size_t num, const T& value)
+*  @name        : inline LinkList<T>::iterator LinkList<T>::insert(iterator pos, size_t num, const T& value)
 *  @description : 在pos前插入num个value
 *  @param		: ListIterator<T> pos, size_t num, const T& value
 *  @return		: ++it
@@ -494,15 +513,20 @@ template <typename T>
 typename inline LinkList<T>::iterator LinkList<T>::insert(iterator pos, size_t num, const T& value)
 {
 	iterator it(pos);
-	--it;	//偏移到插入点的前一个迭代器
-	for (; num > 0; num--) {
+	if (!IsEmpty()) {
+		--it;	//偏移到插入点的前一个迭代器
+	}
+	for (; num > 0; num--, pos) {
 		insert(pos, value);
+		if (pos.m_Pointer == m_Head) {
+			pos++;
+		}
 	}
 	return ++it;
 }
 
 /**
-*  @name        : typename inline ListIterator<T> LinkList<T>::insert(ListIterator<T> pos, const T&& value)
+*  @name        : inline LinkList<T>::iterator LinkList<T>::insert(iterator pos, T&& value)
 *  @description : 在pos前插入value,右值版本
 *  @param		: ListIterator<T> pos, const T&& value
 *  @return		: ++it
@@ -515,11 +539,11 @@ typename inline LinkList<T>::iterator LinkList<T>::insert(iterator pos, T&& valu
 }
 
 /**
-*  @name        : typename inline ListIterator<T> erase(ListIterator<T> pos)
+*  @name        : LinkList<T>::iterator LinkList<T>::erase(iterator pos)
 *  @description : 删除pos处的元素
-*  @param		: ListIterator<T> pos, const T&& value
-*  @return		: 最后移除后的迭代器
-*  @notice      : None
+*  @param		: iterator pos
+*  @return		: 移除后的下一个迭代器
+*  @notice      : 这才发现加个尾节点很麻烦
 */
 template <typename T>
 typename inline LinkList<T>::iterator LinkList<T>::erase(iterator pos)
@@ -539,8 +563,75 @@ typename inline LinkList<T>::iterator LinkList<T>::erase(iterator pos)
 	return iterator(pos);
 }
 
+/**
+*  @name        : inline LinkList<T>::iterator LinkList<T>::erase(iterator pos)
+*  @description : 删除first到last的元素
+*  @param		: iterator first, iterator last
+*  @return		: 移除后的下一个迭代器
+*  @notice      : None
+*/
+template <typename T>
+typename inline LinkList<T>::iterator LinkList<T>::erase(iterator first, iterator last)
+{
+	for (; first != last;) {
+		erase(first++);
+	}
+	erase(last);
+	return ++last;
+}
 
+/**
+*  @name        : inline void LinkList<T>::clear()
+*  @description : 删除所有元素
+*  @param		: None
+*  @return		: None
+*  @notice      : None
+*/
+template <typename T>
+inline void LinkList<T>::clear()
+{	
+	node_type* node = m_Head->m_Next;
+	m_Head->m_Next = nullptr;
+	m_Tail = m_Head;
+	while (node) {
+		node_type* tmp = node->m_Next;
+		delete node;
+		node = tmp;
+	}
+	m_Size = 0;
+}
 
+/**
+*  @name        : inline void resize(size_t size)
+*  @description : 重新指定大小
+*  @param		: size_t size, const T& value
+*  @return		: None
+*  @notice      : None
+*/
+template <typename T>
+inline void LinkList<T>::_Resize(size_t size, const T& value)
+{
+	if (size < m_Size) {	//删除多余节点
+		for (; size < m_Size;) {
+			PopBack();
+		}
+	}
+	else {	//构造新节点
+		for (; size > m_Size;) {
+			PushBack(value);
+		}
+	}
+}
+template <typename T>
+inline void LinkList<T>::resize(size_t size)
+{
+	_Resize(size, T());
+}
+template <typename T>
+inline void LinkList<T>::resize(size_t size, const T& value)
+{
+	_Resize(size, value);
+}
 
 }
 
