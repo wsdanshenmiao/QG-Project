@@ -54,4 +54,12 @@
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="HLSL Files\Cube_PS.cso" />
+    <None Include="HLSL Files\Cube_VS.cso" />
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="HLSL Files\Cube_PS.hlsl" />
+    <FxCompile Include="HLSL Files\Cube_VS.hlsl" />
+  </ItemGroup>
 </Project>

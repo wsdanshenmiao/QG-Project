@@ -82,14 +82,14 @@ bool GameApp::InitResource()
 {
     //设置图形顶点
     GameApp::VertexPosColor vertices[] = {
-        {XMFLOAT3(-0.5f,1.0f,0.0f),XMFLOAT4(0.0f,0.0f,0.0f,0.0f)},
-        {XMFLOAT3(0.5f,1.0f,0.0f),XMFLOAT4(0.0f,0.0f,0.0f,0.0f)},
-        {XMFLOAT3(1.0f,0.5f,0.0f),XMFLOAT4(0.0f,0.0f,0.0f,0.0f)},
-        {XMFLOAT3(1.0f,-0.5f,0.0f),XMFLOAT4(0.0f,0.0f,0.0f,0.0f)},
-        {XMFLOAT3(0.5f,-1.0f,0.0f),XMFLOAT4(0.0f,0.0f,0.0f,0.0f)},
-        {XMFLOAT3(-0.5f,-1.0f,0.0f),XMFLOAT4(0.0f,0.0f,0.0f,0.0f)},
-        {XMFLOAT3(-1.0f,-0.5f,0.0f),XMFLOAT4(0.0f,0.0f,0.0f,0.0f)},
-        {XMFLOAT3(-1.0f,0.5f,0.0f),XMFLOAT4(0.0f,0.0f,0.0f,0.0f)},
+        {XMFLOAT3(-0.5f,1.0f,0.0f),XMFLOAT4(1.0f,0.0f,0.0f,0.0f)},
+        {XMFLOAT3(0.5f,1.0f,0.0f),XMFLOAT4(1.0f,0.0f,0.0f,0.0f)},
+        {XMFLOAT3(1.0f,0.5f,0.0f),XMFLOAT4(1.0f,0.0f,0.0f,0.0f)},
+        {XMFLOAT3(1.0f,-0.5f,0.0f),XMFLOAT4(1.0f,0.0f,0.0f,0.0f)},
+        {XMFLOAT3(0.5f,-1.0f,0.0f),XMFLOAT4(1.0f,0.0f,0.0f,0.0f)},
+        {XMFLOAT3(-0.5f,-1.0f,0.0f),XMFLOAT4(1.0f,0.0f,0.0f,0.0f)},
+        {XMFLOAT3(-1.0f,-0.5f,0.0f),XMFLOAT4(1.0f,0.0f,0.0f,0.0f)},
+        {XMFLOAT3(-1.0f,0.5f,0.0f),XMFLOAT4(1.0f,0.0f,0.0f,0.0f)},
     };
 
     // 设置顶点缓冲区描述
