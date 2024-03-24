@@ -3,7 +3,7 @@
 #include <memory>
 #include <iostream>
 #include "allocator.hpp"
-#include "queue.cpp"
+#include "queue.hpp"
 
 class Entity
 {
@@ -63,10 +63,10 @@ enum Function
 void Catalogue()
 {
 	printf("以Entity(int x, int y)为例演示队列效果，输入一次就一起决定x，y的值\n");
-	printf("***************************0.EXIT			1.PRINT************************\n");
+	printf("***************************0.EXIT			1.PRINT*************************\n");
 	printf("***************************2.PUSH			3.POP***************************\n");
-	printf("***************************4.ASSIGN			5.CLEAR************************\n");
-	printf("***************************6.RESIZE		7.SWAP**************************\n");
+	printf("***************************4.ASSIGN			5.CLEAR*************************\n");
+	printf("***************************6.RESIZE			7.SWAP**************************\n");
 
 }
 
