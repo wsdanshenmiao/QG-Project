@@ -138,7 +138,7 @@ public:
 			return m_Pointer->m_Data;
 		}
 
-		inline T& operator->()const
+		inline T* operator->()const
 		{
 			return &(m_Pointer->m_Data);
 		}
