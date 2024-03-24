@@ -144,7 +144,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Source File\allocator.hpp" />
-    <ClCompile Include="Source File\depue.cpp" />
+    <ClCompile Include="Source File\queue.hpp" />
     <ClCompile Include="Source File\main.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

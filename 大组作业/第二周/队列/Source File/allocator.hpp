@@ -35,12 +35,12 @@ class allocator
 {
 public:
 	//指定别名
-	using value_type = T;
+	using valueType = T;
 	using pointer = T*;
-	using const_pointer = const T*;
+	using constPointer = const T*;
 	using reference = T&;
-	using const_reference = const T&;
-	using size_type = size_t;
+	using constReference = const T&;
+	using sizeType = size_t;
 
 	//构造函数
 	allocator();
@@ -50,7 +50,8 @@ public:
 
 	inline T* allocate(const size_t& count);
 	inline void deallocate(pointer const ptr, const size_t& count);
-	inline void construct(pointer ptr, const_reference value);
+	inline void construct(pointer ptr, constReference value);
+	inline void construct(pointer ptr, valueType&& value);
 	inline void destroy(pointer ptr);
 };
 
@@ -109,11 +110,11 @@ template <typename T>
 inline T* allocator<T>::allocate(const size_t& count)
 {
 	if (count > static_cast<size_t>(-1) / sizeof(T)) {
-		throw std::bad_array_new_length("Too large");
+		throw std::bad_array_new_length();
 	}
 	T* ptr = static_cast<T*>(::operator new(count * sizeof(T)));
 	if (!ptr) {
-		throw std::bad_alloc("Allocation fails");
+		throw std::bad_alloc();
 	}
 	return ptr;
 }
@@ -142,9 +143,23 @@ inline void allocator<T>::deallocate(pointer const ptr, const size_t& count)
  *  @Notice      : placement new在已知地址完成构造
  */
 template <typename T>
-inline void allocator<T>::construct(pointer ptr, const_reference value)
+inline void allocator<T>::construct(pointer ptr, constReference value)
 {
 	new (static_cast<void*>(ptr)) T(value);
+}
+
+
+/**
+ *  @Name        : inline void allocator<T>::construct(pointer ptr, const_reference value)
+ *  @Description : 在指定地址处进行构造
+ *  @Parameters  : ptr指向内存的指针，value构造使用的值
+ *  @Return value: None
+ *  @Notice      : placement new在已知地址完成构造
+ */
+template <typename T>
+inline void allocator<T>::construct(pointer ptr, valueType&& value)
+{
+	new (static_cast<void*>(ptr)) T(std::move(value));	//使用右值构造元素
 }
 
 

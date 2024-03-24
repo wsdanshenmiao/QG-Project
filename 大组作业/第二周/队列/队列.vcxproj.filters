@@ -18,7 +18,7 @@
     <ClCompile Include="Source File\main.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Source File\depue.cpp">
+    <ClCompile Include="Source File\queue.hpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Source File\allocator.hpp">
