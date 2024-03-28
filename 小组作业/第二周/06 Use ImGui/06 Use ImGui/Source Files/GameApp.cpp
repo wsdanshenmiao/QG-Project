@@ -98,6 +98,8 @@ void GameApp::UpdateScene(float dt)
             if (ImGui::Button("Reset Params")){
                 x1 = y1 = phi1 = theta1 = 0.0f;
                 scale1 = 1.0f;
+                x2 = y2 = phi2 = theta2 = 0.0f;
+                scale2 = 1.0f;
                 fov = XM_PIDIV2;
             }
 
@@ -214,7 +216,7 @@ void GameApp::UpdateScene(float dt)
 
 
     //更改常量缓冲区
-//XMVECTOR XM_CALLCONV XMVectorReplicate(float Value);  返回向量(Value, Value, Value, Value)
+    //XMVECTOR XM_CALLCONV XMVectorReplicate(float Value);  返回向量(Value, Value, Value, Value)
     m_CBuffer.world = XMMatrixTranspose(
         XMMatrixScalingFromVector(XMVectorReplicate(scale1)) *
         XMMatrixRotationX(phi1) * XMMatrixRotationY(theta1) *
@@ -253,7 +255,7 @@ void GameApp::UpdateScene(float dt)
 
 
     //更改常量缓冲区
-//XMVECTOR XM_CALLCONV XMVectorReplicate(float Value);  返回向量(Value, Value, Value, Value)
+    //XMVECTOR XM_CALLCONV XMVectorReplicate(float Value);  返回向量(Value, Value, Value, Value)
     m_CBuffer.world = XMMatrixTranspose(
         XMMatrixScalingFromVector(XMVectorReplicate(scale2)) *
         XMMatrixRotationX(phi2) * XMMatrixRotationY(theta2) *
@@ -286,6 +288,7 @@ void GameApp::UpdateScene(float dt)
 
 void GameApp::DrawScene()
 {
+
 }
 
 //用于初始化着色器或相关特效
@@ -376,10 +379,10 @@ bool GameApp::InitResource()
 
     //创建顶点缓冲区描述
     D3D11_BUFFER_DESC vbd2;
-    ZeroMemory(&vbd2, sizeof(vbd2));  //将缓冲区数据置零
+    ZeroMemory(&vbd2, sizeof(vbd2));
     vbd2.ByteWidth = sizeof(vertices1);
-    vbd2.Usage = D3D11_USAGE_IMMUTABLE;  //设置gpu只读权限
-    vbd2.BindFlags = D3D11_BIND_VERTEX_BUFFER;   //设置标志为顶点缓冲区
+    vbd2.Usage = D3D11_USAGE_IMMUTABLE;
+    vbd2.BindFlags = D3D11_BIND_VERTEX_BUFFER;
     vbd2.CPUAccessFlags = 0;
 
     InitData.pSysMem = vertices1;
