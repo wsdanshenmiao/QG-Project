@@ -41,10 +41,11 @@ inline void InsertSort(T* const ptr, const size_t count, bool cmp(const T* v1, c
 		T value = *(ptr + i);	//记录第i个元素
 		long long j = i - 1;	//要插入元素的前一个元素
 		for (; j >= 0 && cmp(ptr + j, &value);) {	//cmp返回true时执行
-			*(ptr + j + 1) = *(ptr + j);	//若第j个元素比value大，第j个元素后移
+			//*(ptr + j + 1) = *(ptr + j);	//若第j个元素比value大，第j个元素后移
 			j--;	//索引前移
 		}
-		//std::memmove(ptr + j + 2, ptr + j + 1, sizeof(T) * (i - j - 1));
+		//使用memmove在元素内存很大时可显著提速
+		std::memmove(ptr + j + 2, ptr + j + 1, sizeof(T) * (i - j - 1));
 		*(ptr + j + 1) = value;	//插入元素
 	}
 }
