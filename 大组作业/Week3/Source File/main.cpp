@@ -264,11 +264,8 @@ inline void TestInRepeatedly(const char* name, Func function)
 	}
 }
 
-
-int main()
+void test1()
 {
-	//TestInsert();
-	//TestMerge();
 	std::cout << "Test In Large Data Sort:\n";
 
 	std::cout << "type: size_t\n";
@@ -299,5 +296,11 @@ int main()
 	TestInRepeatedly<Entity>("InsertSort", QGHW::InsertSort);
 	TestInRepeatedly<Entity>("MergeSort", QGHW::MergeSort);
 	TestInRepeatedly<Entity>("QuickSort", QGHW::QuickSort);
+}
 
+int main()
+{
+	//TestInsert();
+	//TestMerge();
+	test1();
 }
