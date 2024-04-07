@@ -103,11 +103,16 @@ void test2()
 	tree.Insert(Entity(71));
 	tree.Insert(Entity(32));
 	tree.Insert(Entity(7));
+	std::cout << "size():" << tree.Size() << std::endl;
 	std::cout << "不是红黑树所以某些情况判断不了头节点与根节点，所以--可能会出问题\n";
 	std::cout << "迭代器本身是中序\n";
 	for (QGHW::Tree<Entity>::iterator it = tree.Begin(); it != tree.End(); it++){
 		std::cout << *it << std::endl;
 	}
+	for (int i = 0; i < 4; i++) {
+		tree.Erase(tree.Begin());
+	}
+	std::cout << "size():" << tree.Size() << std::endl;
 	std::cout << "先序遍历：\n";
 	Entity* arr1 = tree.PreTraversal();
 	for (int i = 0; i < tree.Size(); i++) {
@@ -152,6 +157,7 @@ void test2()
 	for (QGHW::Tree<Entity>::iterator it = tree.Begin(); it != tree.End(); it++) {
 		std::cout << *it << std::endl;
 	}
+	std::cout << "----------------------------------------\n";
 }
 
 int main()

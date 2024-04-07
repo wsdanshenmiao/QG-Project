@@ -340,6 +340,7 @@ inline TreeIterator<Key> Tree<Key, C, A>::Find(const keyType& key) const
 		}
 		return iterator(node);	//返回找到节点的迭代器，没找到就返回空指针迭代器
 	}
+	return iterator(node);
 }
 
 /**
@@ -673,7 +674,11 @@ inline std::pair<TreeIterator<Key>, bool> Tree<Key, C, A>::_Erase(const Key& key
 		return { it,false };
 	}
 	nodePointer const transform = FindPosterior(node);
+	if (node == m_Head->m_Left) {
+		m_Head->m_Left = transform;
+	}
 	nodeAllocator n_Allocator;
+	keyAllocator k_Allocator;
 	if (node->m_Parent->m_Parent == node) {	//为根节点
 		if (!node->m_Left && !node->m_Right) {	//若都为空
 			m_Head->m_Left = nullptr;
@@ -683,9 +688,11 @@ inline std::pair<TreeIterator<Key>, bool> Tree<Key, C, A>::_Erase(const Key& key
 		else {	//有一方为空
 			if (node->m_Left) {
 				m_Head->m_Parent = node->m_Left;
+				node->m_Left->m_Parent = m_Head;
 			}
 			else {
 				m_Head->m_Parent = node->m_Right;
+				node->m_Right->m_Parent = m_Head;
 			}
 		}
 	}
@@ -709,22 +716,26 @@ inline std::pair<TreeIterator<Key>, bool> Tree<Key, C, A>::_Erase(const Key& key
 			if (node->m_Parent->m_Left == node) {	//node为左子树
 				if (node->m_Left) {
 					node->m_Parent->m_Left = node->m_Left;
+					node->m_Left->m_Parent = node->m_Parent;
 				}
 				else {
 					node->m_Parent->m_Left = node->m_Right;
+					node->m_Right->m_Parent = node->m_Parent;
 				}
 			}
 			else {	//node为右子树
 				if (node->m_Left) {
 					node->m_Parent->m_Right = node->m_Left;
+					node->m_Left->m_Parent = node->m_Parent;
 				}
 				else {
 					node->m_Parent->m_Right = node->m_Right;
+					node->m_Right->m_Parent = node->m_Parent;
 				}
 			}
 		}
 	}
-	n_Allocator.destroy((Key*)node);	//先调用析构
+	k_Allocator.destroy((Key*)node);	//先调用析构
 	n_Allocator.deallocate(node, 1);	//在释放内存
 	node = nullptr;
 	m_Size--;
