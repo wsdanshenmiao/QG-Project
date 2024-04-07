@@ -2,7 +2,9 @@
 #define __BINARY_SORT_TREE__HPP__
 
 #include "allocator.hpp"
-#include "iostream"
+#include <iostream>
+#include <queue>
+#include <stack>
 
 namespace QGHW {
 
@@ -69,7 +71,7 @@ public:
 	inline bool operator==(const thisType& other) const;
 	inline bool operator!=(const thisType& other) const;
 
-private:
+public:
 	nodePointer m_Pointer;
 };
 
@@ -251,17 +253,31 @@ public:
 	Tree(const thisType& other);
 	Tree(thisType&& other);
 	Tree(std::initializer_list<keyType> initList);
+
 	inline iterator Find(const keyType& key) const;
 	inline std::pair<iterator, bool> Insert(const keyType& key);
 	inline bool IsEmpty() const;
-	inline sizeType& Size() const;
+	inline sizeType Size() const;
 	inline iterator Begin() const;
 	inline iterator End() const;
+	inline sizeType Erase(const Key& key);
+	inline iterator Erase(iterator pos);
 
+	inline Key* Traversal(void function(const TreeNode<Key>*, Key*));
+	inline Key* PreTraversal();
+	inline Key* InorderTraversal();
+	inline Key* PostorderTraversal();
+
+	inline Key* HierarchicalTraversal();
+
+	inline Key* PreTNoRecursion();
+	inline Key* ITNoRecursion();
+	inline Key* PosTNoRecursion();
 
 private:
 	inline void _InitTree();
 	inline std::pair<iterator, bool> _Insert(const keyType& key);
+	inline std::pair<iterator, bool> _Erase(const Key& key);
 
 private:
 	sizeType m_Size;	//树的大小
@@ -284,6 +300,26 @@ Tree<Key, C, A>::Tree()
 {
 	_InitTree();
 }
+
+template <typename Key, typename C, typename A>
+Tree<Key, C, A>::Tree(const thisType& other)
+{
+	_InitTree();
+	for (typename Tree<Key, C, A>::iterator it = other.Begin(); it != other.End(); it++){
+		Insert(*it);
+	}
+}
+
+template <typename Key, typename C, typename A>
+Tree<Key, C, A>::Tree(thisType&& other)
+{
+	m_Head = other.m_Head;
+	m_Size = other.m_Size;
+	m_keyCompate = other.m_keyCompate;
+	other.m_Head = nullptr;
+	other.m_Size = 0;
+}
+
 
 /**
  *  @Name        : Find(const keyType& key)
@@ -337,7 +373,7 @@ inline bool Tree<Key, C, A>::IsEmpty() const
  *  @Return value: 返回树的大小
  */
 template <typename Key, typename C, typename A>
-inline size_t& Tree<Key, C, A>::Size() const
+inline size_t Tree<Key, C, A>::Size() const
 {
 	return m_Size;
 }
@@ -354,8 +390,7 @@ inline TreeIterator<Key> Tree<Key, C, A>::Begin() const
 	if (IsEmpty()) {
 		return End();
 	}
-	iterator it(m_Head->m_Left);
-	return it;
+	return iterator(m_Head->m_Left);
 }
 
 /**
@@ -367,8 +402,185 @@ inline TreeIterator<Key> Tree<Key, C, A>::Begin() const
 template <typename Key, typename C, typename A>
 inline TreeIterator<Key> Tree<Key, C, A>::End() const
 {
-	iterator it(m_Head);
-	return it;
+	
+	return iterator(m_Head);;
+}
+
+template <typename Key, typename C, typename A>
+inline size_t Tree<Key, C, A>::Erase(const Key& key)
+{
+	std::pair<iterator, bool> pair = _Erase(key);
+	return pair.second;
+}
+
+template <typename Key, typename C, typename A>
+inline TreeIterator<Key> Tree<Key, C, A>::Erase(iterator pos)
+{
+	std::pair<iterator, bool> pair = _Erase(*pos);
+	return pair.first;
+}
+
+template <typename Key>
+inline void pre_Traversal(const TreeNode<Key>* node, Key* arr)
+{
+	if (node) {
+		static size_t i = 0;
+		*(arr + i++) = node->m_Key;
+		pre_Traversal(node->m_Left, arr);
+		pre_Traversal(node->m_Right, arr);
+	}
+}
+template <typename Key>
+inline void inorder_Traversal(const TreeNode<Key>* node, Key* arr)
+{
+	if (node) {
+		static size_t i = 0;
+		inorder_Traversal(node->m_Left, arr);
+		*(arr + i++) = node->m_Key;
+		inorder_Traversal(node->m_Right, arr);
+	}
+}
+template <typename Key>
+inline void pos_Traversal(const TreeNode<Key>* node, Key* arr)
+{
+	if (node) {
+		static size_t i = 0;
+		pos_Traversal(node->m_Left, arr);
+		pos_Traversal(node->m_Right, arr);
+		*(arr + i++) = node->m_Key;
+	}
+}
+template <typename Key, typename C, typename A>
+inline Key* Tree<Key, C, A>::Traversal(void function(const TreeNode<Key>*, Key*))
+{
+	if (m_Size == 0) {
+		return nullptr;
+	}
+	QGHW::allocator<Key> k_Allocator;
+	Key* arr = k_Allocator.allocate(m_Size);
+	function(m_Head->m_Parent, arr);
+	return arr;
+}
+template <typename Key, typename C, typename A>
+inline Key* Tree<Key, C, A>::PreTraversal()
+{
+	return Traversal(pre_Traversal);
+}
+template <typename Key, typename C, typename A>
+inline Key* Tree<Key, C, A>::InorderTraversal()
+{
+	return Traversal(inorder_Traversal);
+}
+template <typename Key, typename C, typename A>
+inline Key* Tree<Key, C, A>::PostorderTraversal()
+{
+	return Traversal(pos_Traversal);
+}
+
+
+template <typename Key, typename C, typename A>
+inline Key* Tree<Key, C, A>::HierarchicalTraversal()
+{
+	if (m_Size == 0) {
+		return nullptr;
+	}
+	size_t i = 0;
+	keyAllocator k_Allocator;
+	Key* arr = k_Allocator.allocate(m_Size);
+	std::queue<nodePointer> queue;
+	queue.push(m_Head->m_Parent);	//根节点入队
+	for (; !queue.empty();) {	//若不为空则没遍历完
+		nodePointer tmp = queue.front();
+		queue.pop();	//出队
+		*(arr + i++) = tmp->m_Key;
+		if (tmp->m_Left) {	//左节点入队
+			queue.push(tmp->m_Left);
+		}
+		if (tmp->m_Right) {	//右节点入队
+			queue.push(tmp->m_Right);
+		}
+	}
+	return arr;
+}
+
+template <typename Key, typename C, typename A>
+inline Key* Tree<Key, C, A>::PreTNoRecursion()
+{
+	if (m_Size == 0) {
+		return nullptr;
+	}
+	size_t i = 0;
+	keyAllocator k_Allocator;
+	Key* arr = k_Allocator.allocate(m_Size);
+	std::stack<nodePointer> stack;	//使用栈模拟递归
+	stack.push(m_Head->m_Parent);	//根节点入栈
+	while (!stack.empty()) {	//中左右
+		nodePointer tmp = stack.top();	//记录栈顶
+		stack.pop();	//出栈
+		*(arr + i++) = tmp->m_Key;
+		if (tmp->m_Right) {	//右节点入栈
+			stack.push(tmp->m_Right);
+		}
+		if (tmp->m_Left) {	//左节点入栈
+			stack.push(tmp->m_Left);
+		}
+	}
+	return arr;
+}
+
+template <typename Key, typename C, typename A>
+inline Key* Tree<Key, C, A>::ITNoRecursion()
+{
+	if (m_Size == 0) {
+		return nullptr;
+	}
+	size_t i = 0;
+	keyAllocator k_Allocator;
+	Key* arr = k_Allocator.allocate(m_Size);
+	std::stack<nodePointer> stack;	//使用栈模拟递归
+	nodePointer node = m_Head->m_Parent;
+	while (!stack.empty() || node) {
+		if (node) {
+			stack.push(node);
+			node = node->m_Left;
+		}
+		else {
+			node = stack.top();
+			stack.pop();
+			*(arr + i++) = node->m_Key;
+			node = node->m_Right;
+		}
+	}
+	return arr;
+}
+
+template <typename Key, typename C, typename A>
+inline Key* Tree<Key, C, A>::PosTNoRecursion()
+{
+	if (m_Size == 0) {
+		return nullptr;
+	}
+	size_t i = 0, j = 0;
+	keyAllocator k_Allocator;
+	Key* arr = k_Allocator.allocate(m_Size);
+	std::vector<Key> vector;	//临时数组，最后反转
+	vector.reserve(m_Size);
+	std::stack<nodePointer> stack;	//使用栈模拟递归
+	stack.push(m_Head->m_Parent);	//根节点入栈
+	while (!stack.empty()) {	//中右左
+		nodePointer tmp = stack.top();	//记录栈顶
+		stack.pop();	//出栈
+		vector.push_back(tmp->m_Key);
+		if (tmp->m_Left) {	//左节点入栈
+			stack.push(tmp->m_Left);
+		}
+		if (tmp->m_Right) {	//右节点入栈
+			stack.push(tmp->m_Right);
+		}
+	}
+	//最后反转数组即为左右中
+	for (typename std::vector<Key>::reverse_iterator it = vector.rbegin(); it != vector.rend(); *(arr + j++) = *it, it++);
+	return arr;
 }
 
 
@@ -385,7 +597,7 @@ Class Definition	(private)
  *  @Return value: None
  */
 template <typename Key, typename C, typename A>
-void Tree<Key, C, A>::_InitTree()
+inline void Tree<Key, C, A>::_InitTree()
 {
 	nodeAllocator n_Allocator;
 	keyAllocator k_Allovator;
@@ -396,6 +608,8 @@ void Tree<Key, C, A>::_InitTree()
 	m_Head->m_Right = nullptr;
 	m_Size = 0;
 }
+
+//插入主函数
 template <typename Key, typename C, typename A>
 inline std::pair<TreeIterator<Key>, bool> Tree<Key, C, A>::_Insert(const keyType& key)
 {
@@ -449,6 +663,74 @@ inline std::pair<TreeIterator<Key>, bool> Tree<Key, C, A>::_Insert(const keyType
 	}
 }
 
+//删除主函数
+template <typename Key, typename C, typename A>
+inline std::pair<TreeIterator<Key>, bool> Tree<Key, C, A>::_Erase(const Key& key)
+{
+	nodePointer node = Find(key).m_Pointer;
+	if (!node) {
+		iterator it(node);
+		return { it,false };
+	}
+	nodePointer const transform = FindPosterior(node);
+	nodeAllocator n_Allocator;
+	if (node->m_Parent->m_Parent == node) {	//为根节点
+		if (!node->m_Left && !node->m_Right) {	//若都为空
+			m_Head->m_Left = nullptr;
+			m_Head->m_Parent = nullptr;
+			m_Head->m_Right = nullptr;
+		}
+		else {	//有一方为空
+			if (node->m_Left) {
+				m_Head->m_Parent = node->m_Left;
+			}
+			else {
+				m_Head->m_Parent = node->m_Right;
+			}
+		}
+	}
+	else {
+		if (!node->m_Left && !node->m_Right) {	//若都为空
+			if (node->m_Parent->m_Left == node) {
+				node->m_Parent->m_Left = nullptr;
+			}
+			else {
+				node->m_Parent->m_Right = nullptr;
+			}
+		}
+		else if (node->m_Left && node->m_Right) {	//都不为空
+			nodePointer trans = transform;	//寻找其后位
+			nodePointer tmp = trans;
+			node->m_Key = trans->m_Key;	//让后位顶替
+			trans = node;
+			node = tmp;	//交换
+		}
+		else {	//有一方为空
+			if (node->m_Parent->m_Left == node) {	//node为左子树
+				if (node->m_Left) {
+					node->m_Parent->m_Left = node->m_Left;
+				}
+				else {
+					node->m_Parent->m_Left = node->m_Right;
+				}
+			}
+			else {	//node为右子树
+				if (node->m_Left) {
+					node->m_Parent->m_Right = node->m_Left;
+				}
+				else {
+					node->m_Parent->m_Right = node->m_Right;
+				}
+			}
+		}
+	}
+	n_Allocator.destroy((Key*)node);	//先调用析构
+	n_Allocator.deallocate(node, 1);	//在释放内存
+	node = nullptr;
+	m_Size--;
+	iterator it(transform);
+	return { it,true };
+}
 
 /*****************************
 Auxiliary Function

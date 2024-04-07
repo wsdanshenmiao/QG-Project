@@ -1,5 +1,5 @@
-#include <set>
 #include <iostream>
+#include <random>
 #include "BinarySortTree.cpp"
 
 class Entity
@@ -32,6 +32,7 @@ public:
 	Entity& operator=(const Entity& other)
 	{
 		m_Location = new size_t(*other.m_Location);
+		return *this;
 	}
 	Entity& operator=(Entity&& other) noexcept
 	{
@@ -86,20 +87,12 @@ std::ostream& operator<<(std::ostream& stream, const Entity& e)
 }
 
 
-void test1()
-{
-	std::set<Entity> tree;
-	tree.insert({ Entity(1), Entity(9), Entity(6), Entity(7), Entity(5), Entity(7), Entity(4) });
-	std::cout << sizeof(tree) << std::endl;
-	std::cout << *tree.erase(tree.begin()) << std::endl;
-	//for (std::set<Entity>::iterator it = tree.begin(); it != tree.end(); it++)
-	//{
-	//	std::cout << *it << std::endl;
-	//}
-}
-
 void test2()
 {
+	std::random_device rd;
+	std::mt19937 gen(rd());
+	//指定随机数的类型和范围
+	std::uniform_int_distribution<size_t> dis(0, 100);
 	QGHW::Tree<Entity> tree;
 	std::cout << "sizeof(tree):" << sizeof(tree) << std::endl;
 	tree.Insert(Entity(6));
@@ -111,11 +104,54 @@ void test2()
 	tree.Insert(Entity(32));
 	tree.Insert(Entity(7));
 	std::cout << "不是红黑树所以某些情况判断不了头节点与根节点，所以--可能会出问题\n";
-	for (QGHW::Tree<Entity>::iterator it = tree.Begin(); it != tree.End(); it++)
-	{
+	std::cout << "迭代器本身是中序\n";
+	for (QGHW::Tree<Entity>::iterator it = tree.Begin(); it != tree.End(); it++){
 		std::cout << *it << std::endl;
 	}
+	std::cout << "先序遍历：\n";
+	Entity* arr1 = tree.PreTraversal();
+	for (int i = 0; i < tree.Size(); i++) {
+		std::cout << *(arr1 + i) << std::endl;
+	}
+	std::cout << "中序遍历：\n";
+	arr1 = tree.InorderTraversal();
+	for (int i = 0; i < tree.Size(); i++) {
+		std::cout << *(arr1 + i) << std::endl;
+	}
+	std::cout << "后序遍历：\n";
+	arr1 = tree.PostorderTraversal();
+	for (int i = 0; i < tree.Size(); i++) {
+		std::cout << *(arr1 + i) << std::endl;
+	}
+	std::cout << "先序遍历非递归：\n";
+	arr1 = tree.PreTNoRecursion();
+	for (int i = 0; i < tree.Size(); i++) {
+		std::cout << *(arr1 + i) << std::endl;
+	}
+	std::cout << "中序遍历非递归：\n";
+	arr1 = tree.ITNoRecursion();
+	for (int i = 0; i < tree.Size(); i++) {
+		std::cout << *(arr1 + i) << std::endl;
+	}
+	std::cout << "后序遍历非递归：\n";
+	arr1 = tree.PosTNoRecursion();
+	for (int i = 0; i < tree.Size(); i++) {
+		std::cout << *(arr1 + i) << std::endl;
+	}
 
+	std::cout << "层次遍历：\n";
+	arr1 = tree.HierarchicalTraversal();
+	for (int i = 0; i < tree.Size(); i++) {
+		std::cout << *(arr1 + i) << std::endl;
+	}
+
+	std::cout << "----------------------------------------\n";
+	for (int i = 0; i < 10; i++) {
+		tree.Insert(dis(gen));
+	}
+	for (QGHW::Tree<Entity>::iterator it = tree.Begin(); it != tree.End(); it++) {
+		std::cout << *it << std::endl;
+	}
 }
 
 int main()
