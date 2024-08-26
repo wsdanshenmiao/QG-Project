@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 71454b886c46663478404086b1ba8140, type: 3}
+  m_Name: GhostData
+  m_EditorClassIdentifier: 
+  EnemyID: Ghost
+  Appearance: Ghost
+  IncreaseHP: 4
+  IncreaseDamage: 2
+  DropExperience: 2
+  DropGold: 2
+  PropChance: 0.08
+  DeathIncident: []
+  EnemyAiData: {fileID: 11400000, guid: d7a31106da910d742b117053faf74637, type: 2}
