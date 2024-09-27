@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -8,6 +9,10 @@ public class FourCars : MonoBehaviour
 
     private int num1 = 0;    // 第一波车的数量
     //private status getNum1Status = status.none;   // 标志num1的状态
+    private int road1 = 0;  // 道路1的车数量
+    private int road2 = 0;  // 道路2的车数量
+    private int road3 = 0;  // 道路3的车数量
+    private int road4 = 0;  // 道路4的车数量
     private int num2 = 0;    // 第二波车的数量   
     //private status getNum2Status = status.none;   // 标志num1的状态
     private car[] CarsManager1;   // 用来储存第一波车辆的数组
@@ -16,17 +21,28 @@ public class FourCars : MonoBehaviour
     private car[] CarsManager2;   // 用来储存第二波车辆的数组
     //private status wave2 = status.none;         // 第二波的状态
     private bool wave2 = true;         // 第二波的状态
-    //private string PutServeUrl = "http://8.138.121.2:8080/put_path_num?path_num=4";   // 存放URL
+    private string PutServeUrl = "http://8.138.121.2:8080/put_sub_position";   // 存放URL
     //private bool isPutSucceed = false;  // 标志需求是否成功
-    private string GetPathServeUrl = "http://8.138.121.2:8080/get_sub_path";
+    private string GetPathServeUrl = "http://8.138.121.2:8080/get_sub_position";     // 拿路径的URL
     private string GetCarNumServeUrl = "http://8.138.121.2:8080/get_sub_num";
     private Vector2 carNum = Vector2.zero;    // 存储两波车的数量
     private bool getNumSucceed = false;  // 获取两波车数量的状态
 
+    void Awake(){
+        //Debug.Log("Car_Num = " + Car_Num);
+        //Car_Num = ScenesManager2D.Instance.CarCount;
+        //Debug.Log("Car_Num = " + Car_Num);
+        road1 = ScenesManager2D.Instance.CarCounts[0];
+        road2 = ScenesManager2D.Instance.CarCounts[1];
+        road3 = ScenesManager2D.Instance.CarCounts[2];
+        road4 = ScenesManager2D.Instance.CarCounts[3];
+        Debug.Log("获取到的车辆数量分别为:" + road1 + "  " + road2 + "  " + road2 + "  " + road2 + "  ");
+    }
+
     void Start()
     {
 
-        StartCoroutine(GetNumToServer(GetCarNumServeUrl));
+        StartCoroutine(SendPutRequest());
         //while(!getNumSucceed){
         //Debug.Log("等待回复");
         //}
@@ -140,10 +156,29 @@ public class FourCars : MonoBehaviour
 
     }
 
-    /*
+    
     IEnumerator SendPutRequest()
     {
-        UnityWebRequest www = UnityWebRequest.Put(PutServeUrl, "");
+        // 假设你有两个 int 值 CarNum 和 AnotherNum
+
+        int path = 4;
+        becomeEven(ref road1);
+        becomeEven(ref road2);
+        becomeEven(ref road3);
+        becomeEven(ref road4);
+        List<int> Car_Num = new List<int> { road1, road2, road3, road4 };
+        // 创建一个包含这两个值的 JSON 对象
+        var requestBody = new
+        {
+            PathNum = path,
+            Car_Num = Car_Num
+        };
+
+        // 将 JSON 对象序列化为字符串
+        string jsonRequestBody = JsonUtility.ToJson(requestBody);
+
+        //string requestBody = CarNum.ToString(); // 将 int 类型转换为字符串
+        UnityWebRequest www = UnityWebRequest.Put(PutServeUrl, jsonRequestBody);
         www.downloadHandler = new DownloadHandlerBuffer();
         www.SetRequestHeader("Content-Type", "application/json");
 
@@ -160,8 +195,9 @@ public class FourCars : MonoBehaviour
             // 检查服务器返回的文本是否为 "succeed"
             //if (www.downloadHandler.text == "["put succeed"]")
             //{
-                isPutSucceed = true;
+                //isPutSucceed = true;
                 Debug.Log("收到 'put succeed'，继续执行");
+                StartCoroutine(GetNumToServer(GetCarNumServeUrl));
             //}
             //else
             //{
@@ -170,7 +206,7 @@ public class FourCars : MonoBehaviour
         }
 
     }
-    */
+    
 
     //IEnumerator GetPathToServer(System.Action<string> setString = null, System.Action<bool> setBool1 = null, System.Action<bool> setBool2 = null)
     IEnumerator GetPathToServer(System.Action<string> setString = null, System.Action<status> setStatus = null)
@@ -355,6 +391,14 @@ public class FourCars : MonoBehaviour
             End = false;
         }
 
+    }
+
+    void becomeEven(ref int number){
+        if(number < 6){
+            if(number % 2 != 0){
+                number += 1;
+            }
+        }
     }
 
     struct PathWrapper

@@ -1,16 +1,8 @@
-using OfficeOpenXml.Drawing.Chart;
-using System.Collections;
-using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using OfficeOpenXml;
-using System.Xml.Linq;
-using Unity.VisualScripting;
 using UnityEditor;
-using System;
 using System.Text.RegularExpressions;
-using UnityEngine.U2D;
-using OfficeOpenXml.FormulaParsing.Excel.Functions.Text;
 using TMPro;
 
 public class ImportNodeData : MonoBehaviour
@@ -37,20 +29,42 @@ public class ImportNodeData : MonoBehaviour
 
             for (int i = 2; i <= 39; ++i)
             {
-                double num = (double)worksheet.Cells[i, 1].Value;
-                double x = (double)worksheet.Cells[i, 2].Value;
-                double y = (double)worksheet.Cells[i, 3].Value;
+                int num = (int)(double)worksheet.Cells[i, 1].Value;
+                Vector2 pos = Vector2.zero;
+                pos.x = (float)(double)worksheet.Cells[i, 2].Value;
+                pos.y = (float)(double)worksheet.Cells[i, 3].Value;
                 string name = worksheet.Cells[i, 4].Value.ToString();
+                Vector4 nearNode = new Vector4(-1, -1, -1, -1);
                 string nearPoint = worksheet.Cells[i, 5].Value.ToString();
+                int count = 0;
+                int index = 0;
+                int length = 1;
+                foreach(var c in nearPoint){
+                    if (c != 'ã€') {
+                        count = count * 10 + c - '0';
+                    }
+                    else{
+                        nearNode[index++] = count;
+                        count = 0;
+                    }
+                    if(length == nearPoint.Length){
+                        nearNode[index++] = count;
+                    }
+                    ++length;
+                }
+                // NodeData nodes = NodesData.Instance.Nodes;
+                // nodes.Nums.Add(num);
+                // nodes.Poss.Add(pos);
+                // nodes.Names.Add(name);
+                // nodes.NearNode.Add(nearNode);
 
                 GameObject gameObject = Instantiate(Circle);
                 gameObject.name = num.ToString();
 
-                Vector3 newPos = new Vector3((float)x, (float)y, 0);
-                gameObject.transform.position = newPos;
-                gameObject.transform.localScale = new Vector3(2, 2, 2);
+                gameObject.transform.position = new Vector3(pos.x, pos.y, 0);
+                gameObject.transform.localScale = new Vector3(1, 1, 1);
 
-                switch (Regex.Matches(nearPoint, "¡¢").Count)
+                switch (Regex.Matches(nearPoint, "ã€").Count)
                 {
                     case 1: gameObject.tag = "TwoPathNode"; break;
                     case 2: gameObject.tag = "ThreePathNode"; break;

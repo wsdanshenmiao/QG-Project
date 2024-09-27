@@ -26,7 +26,7 @@ public class ColorManager2D : Singleton<ColorManager2D>
     public Texture2D RoadTexture;
 
     //private string m_FilePath = Application.dataPath + "/Macroscopic/Scripts/TestData/node_json.json";
-    private string m_Address = "http://8.138.121.2:8080/get_weights";
+    private string m_Address = "http://8.138.170.116:8080/macroscopic/get_weights";
     private string m_Json;
 
     private bool m_Initialized = false;
@@ -230,6 +230,9 @@ public class ColorManager2D : Singleton<ColorManager2D>
     /// <returns></returns>
     IEnumerator WaitToInit()
     {
+
+        yield return new WaitForSeconds(2.0f);
+
         UnityWebRequest webRequest = UnityWebRequest.Get(m_Address);
 
         // 发送请求并等待响应

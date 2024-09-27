@@ -8,7 +8,7 @@ using System.IO;
 public class NavigationPath : Singleton<NavigationPath>
 {
     /// <summary>
-    /// ½ÓÊÕµ½µÄµ¼º½Â·¾¶ÉÏµÄ½Úµã£¬°´Ë³Ðò
+    /// ï¿½ï¿½ï¿½Õµï¿½ï¿½Äµï¿½ï¿½ï¿½Â·ï¿½ï¿½ï¿½ÏµÄ½Úµã£¬ï¿½ï¿½Ë³ï¿½ï¿½
     /// </summary>
     [System.Serializable]
     private struct PathNode
@@ -17,16 +17,16 @@ public class NavigationPath : Singleton<NavigationPath>
     }
 
     //private string m_FilePath = Application.dataPath + "/Macroscopic/Scripts/TestData/PathNodes.json";
-    private string m_Address = "http://8.138.121.2:8080/get_user_path";
+    private string m_Address = "http://8.138.170.116:8080/macroscopic/get_user_path";
 
     private GameObject m_Path;
     private LineRenderer m_PathLR;
 
-    // ÊÇ·ñ·¢ËÍÇëÇó
+    // ï¿½Ç·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     private bool m_IsRequest = false;
-    // ÊÇ·ñ³õÊ¼»¯
+    // ï¿½Ç·ï¿½ï¿½Ê¼ï¿½ï¿½
     private bool m_IsInit = false;
-    // ÊÇ·ñäÖÈ¾
+    // ï¿½Ç·ï¿½ï¿½ï¿½È¾
     private bool m_RenderPath = true;
 
     // Start is called before the first frame update
@@ -90,11 +90,11 @@ public class NavigationPath : Singleton<NavigationPath>
 
         if (request.result == UnityWebRequest.Result.ConnectionError || request.result == UnityWebRequest.Result.ProtocolError)
         {
-            Debug.LogError("´íÎó: " + request.error);
+            Debug.LogError("ï¿½ï¿½ï¿½ï¿½: " + request.error);
         }
         else
         {
-            // ÇëÇó³É¹¦£¬½øÐÐµ¼º½Â·¾¶³õÊ¼»¯
+            // ï¿½ï¿½ï¿½ï¿½É¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ðµï¿½ï¿½ï¿½Â·ï¿½ï¿½ï¿½ï¿½Ê¼ï¿½ï¿½
             string json = request.downloadHandler.text;
             PathNode pathNode = JsonUtility.FromJson<PathNode>(json);
             InitPath(pathNode.PathNodes);
@@ -111,7 +111,7 @@ public class NavigationPath : Singleton<NavigationPath>
 
         if (request.result == UnityWebRequest.Result.ConnectionError || request.result == UnityWebRequest.Result.ProtocolError)
         {
-            Debug.LogError("´íÎó: " + request.error);
+            Debug.LogError("è¿žæŽ¥å¤±è´¥: " + request.error);
         }
         else
         {

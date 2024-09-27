@@ -40,7 +40,7 @@ public class ImportRoadData : MonoBehaviour
 
                 for (int j = 0; j <= nearPoint.Length; ++j)
                 {
-                    if (j != nearPoint.Length && nearPoint[j] != '¡¢')
+                    if (j != nearPoint.Length && nearPoint[j] != 'ã€')
                     {
                         numChar[k++] = nearPoint[j];
                     }
@@ -59,15 +59,26 @@ public class ImportRoadData : MonoBehaviour
                         {
                             GameObject newRoad = Instantiate(Prefab);
                             newRoad.name = "Road" + (count++);
+                            newRoad.tag = "Straight";
                             LineRenderer roadRenderer = newRoad.GetComponent<LineRenderer>();
                             roadRenderer.positionCount = 2;
                             roadRenderer.SetPosition(0, new Vector3((float)x1, (float)y1, 0));
                             roadRenderer.SetPosition(1, new Vector3((float)x2, (float)y2, 0));
-                            roadRenderer.startWidth = 0.8f;
-                            roadRenderer.endWidth = 0.8f;
+                            roadRenderer.startWidth = 0.3f;
+                            roadRenderer.endWidth = 0.3f;
                             roadRenderer.alignment = LineAlignment.TransformZ;
                             roadRenderer.useWorldSpace = true;
                             roadRenderer.sortingLayerName = "TrafficRoad";
+
+                            EdgeCollider2D edgeCollider = newRoad.GetComponent<EdgeCollider2D>();
+                            Vector2 star = new Vector2((float)x1, (float)y1);
+                            Vector2 end = new Vector2((float)x2, (float)y2);
+                            Vector2 dir = (end - star).normalized;
+                            List<Vector2> points = new List<Vector2>();
+                            points.Add(star + dir * 1.2f);
+                            points.Add(end - dir * 1.2f);
+                            edgeCollider.SetPoints(points);
+                            edgeCollider.edgeRadius = 0.15f;
 
                             m_Roads.Add(key1, newRoad);
                         }

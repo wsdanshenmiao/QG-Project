@@ -9,16 +9,15 @@ using System.Threading;
 public class MainMacroscopic : DontDestorySingleton<MainMacroscopic>
 {
     private bool isPutSucceed = false;  // 标志需求是否成功
+    private Sprite carSprite;
+    public Texture2D carTexture;  // 车所用的贴图
     //string[] json;
 
-    int quantity = 10;  // 车的数量
+    int quantity = 50;  // 车的数量
     //string json;     // 用来临时存储json文件
-    string GetServeUrl = "http://8.138.121.2:8080/get_path"; // 使用你的公网IP
-    string PutServeUrl = "http://8.138.121.2:8080/put_car?car_num=10";
-
-    public Sprite CarSprite;
-    public Material SphereMaterial;
-    public Vector3 sphereScale = new Vector3(3f, 3f, 3f); // 设置球体缩放大小
+    string GetServeUrl = "http://8.138.170.116:8080/macroscopic/get_path"; 
+    string PutServeUrl = "http://8.138.170.116:8080/macroscopic/put_car?car_num=30";
+    public Vector3 sphereScale = new Vector3(1f, 1f, 1f); // 设置球体缩放大小
 
     //public float testSpeed = 1f;
     //public Vector3[] testPath ={
@@ -27,10 +26,11 @@ public class MainMacroscopic : DontDestorySingleton<MainMacroscopic>
 
 
 
-    car[] cars;
+    public car[] cars;
 
     void Start()
     {
+        carSprite = Sprite.Create(carTexture, new Rect(0, 0, carTexture.width, carTexture.height), new Vector2(0.5f, 0.5f));
         StartCoroutine(SendPutRequest());    // 向服务器发送车辆的数量
 
         //StartCoroutine(CheckRequestStatus());
@@ -46,16 +46,19 @@ public class MainMacroscopic : DontDestorySingleton<MainMacroscopic>
 
         // 初始化各个车辆
         cars = new car[quantity];
-        for (int i = 0; i < quantity; i++)
+        for (int index = 0; index < quantity; index++)
         {
+            int i = index;
             cars[i] = new car();
-            cars[i].initialSphere(SphereMaterial, sphereScale, CarSprite);
+            //cars[i].initialSphere(SphereMaterial, sphereScale, CarModel);
+            cars[i].initialCar(sphereScale,carSprite);
+
             //cars[i].TestRefresh(filePath[i]);
             //cars[i].sphereObject.transform.position = cars[i].fromAI.path[0];
 
             // 设为子类
             cars[i].sphereObject.transform.SetParent(transform, false);
-
+//
         }
 
 
@@ -63,10 +66,13 @@ public class MainMacroscopic : DontDestorySingleton<MainMacroscopic>
 
     void FixedUpdate()
     {
+        /*
         if (ScenesManager2D.Instance.UserID == null)
             return;
         else if (ScenesManager2D.Instance.UserID[0] != '0')
             return;
+        */
+
 
         //Thread blockingThread = new Thread(Check);
         //blockingThread.Start();
@@ -86,10 +92,12 @@ public class MainMacroscopic : DontDestorySingleton<MainMacroscopic>
                 }
                 else
                 {
+                    //Debug.Log("进入循环");
                     //StartCoroutine(GetRequestToServer(() => cars[i].json, newValue => cars[i].json = newValue));
                     int index = i; // 使用局部变量来保存 i 的值
                     StartCoroutine(GetRequestToServer((value) => cars[index].json = value,
                     (value) => cars[index].getNewPathSucceed = value));
+                    //StartCoroutine(WaitAndPrint(0.02f));
                     //Debug.Log(cars[i].json);
                     if (cars[index].getNewPathSucceed)
                     {
@@ -108,9 +116,9 @@ public class MainMacroscopic : DontDestorySingleton<MainMacroscopic>
 
     private void RenderCar()
     {
-        bool render = FindObjectOfType<ScenesManager2D>() != null;
-        MeshRenderer[] childMeshRenderer = GetComponentsInChildren<MeshRenderer>();
-        foreach (var child in childMeshRenderer)
+        bool render = ScenesManager2D.Instance.SceneAsync == 0;
+        SpriteRenderer[] childSpriteRenderer = GetComponentsInChildren<SpriteRenderer>();
+        foreach (var child in childSpriteRenderer)
         {
             child.enabled = render;
         }
@@ -123,14 +131,14 @@ public class MainMacroscopic : DontDestorySingleton<MainMacroscopic>
         using (UnityWebRequest webRequest = UnityWebRequest.Get(GetServeUrl))
         {
             // 请求超时时间设置，这里设置为 10 秒
-            //webRequest.timeout = 10;
-
+            webRequest.timeout = 6000;
+            yield return new WaitForSeconds(0.2f);
             // 发送请求并等待响应
             yield return webRequest.SendWebRequest();
             if (webRequest.result == UnityWebRequest.Result.ConnectionError || webRequest.result == UnityWebRequest.Result.ProtocolError)
             {
-                //Debug.LogError("错误: " + webRequest.error);
-                Debug.Log("错误: ");
+                Debug.Log("错误: " + webRequest.error);
+                //Debug.Log("错误: ");
             }
             else
             {
@@ -146,7 +154,7 @@ public class MainMacroscopic : DontDestorySingleton<MainMacroscopic>
         }
     }
 
-    class car
+    public class car
     {
         public transmitData fromAI;     // 从AI组中获取到的信息
         public GameObject sphereObject;   // 表示车辆的一个物体
@@ -160,18 +168,18 @@ public class MainMacroscopic : DontDestorySingleton<MainMacroscopic>
         //this.initialSphere(SphereMaterial,sphereScale);
         //}
 
-        public void initialSphere(Material SphereMaterial, Vector3 sphereScale, Sprite sprite)
+        public void initialCar(Vector3 sphereScale,Sprite carSprite)
         {
             // 创建球体对象
             sphereObject = new GameObject();
-            sphereObject.transform.position = new Vector3(-10f, -10f, 0);
+            sphereObject.transform.position = new Vector3(-10000f, -10000f, 0);
 
             // 获取球体的渲染器组件
             SpriteRenderer rend = sphereObject.AddComponent<SpriteRenderer>();
             // 应用材质到球体
-            rend.material = SphereMaterial;
+
             rend.sortingLayerName = "Car";
-            rend.sprite = sprite;
+            rend.sprite = carSprite;
 
             // 设置球体的缩放
             sphereObject.transform.localScale = sphereScale;
@@ -193,6 +201,22 @@ public class MainMacroscopic : DontDestorySingleton<MainMacroscopic>
                 // 检查是否接近当前目标点，如果接近则切换到下一个目标点
                 if (Vector3.Distance(sphereObject.transform.position, fromAI.path[currentWaypointIndex]) < 0.0001f)
                 {
+                    
+                    Vector3 direction = Vector3.zero;
+                    if(currentWaypointIndex + 1 < fromAI.path.Length){
+                        direction = (fromAI.path[currentWaypointIndex + 1] - fromAI.path[currentWaypointIndex]).normalized;
+                    }
+                    
+                    Quaternion rotation = Quaternion.LookRotation(direction);
+
+                    // 提取 Z 轴的旋转角度
+                    float zAngle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+
+                    // 创建一个新的旋转角度，只改变 Z 轴，X 和 Y 轴为 0
+                    //Vector3 newRotation = new Vector3(0, 0, zAngle);
+                    //sphereObject.transform.rotation = Quaternion.LookRotation(newRotation);
+                    sphereObject.transform.rotation = Quaternion.Euler(0, 0, zAngle - 90f);
+                    //sphereObject.transform.eulerAngles = newRotation;
                     currentWaypointIndex++;
                 }
             }
@@ -229,6 +253,20 @@ public class MainMacroscopic : DontDestorySingleton<MainMacroscopic>
             fromAI = JsonUtility.FromJson<transmitData>(json);      // 获得新的速度和路径
             sphereObject.transform.position = fromAI.path[0];       // 设置为起点位置
             currentWaypointIndex = 1;
+            Vector3 direction = (fromAI.path[currentWaypointIndex] - fromAI.path[currentWaypointIndex - 1]).normalized;
+
+                if (direction != Vector3.zero)
+                {
+                    Quaternion rotation = Quaternion.LookRotation(direction);
+
+                    // 提取 Z 轴的旋转角度
+                    float zAngle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+
+                    // 创建一个新的旋转角度，只改变 Z 轴，X 和 Y 轴为 0
+                    //Vector3 newRotation = new Vector3(0, 0, zAngle);
+                    //sphereObject.transform.rotation = Quaternion.LookRotation(newRotation);
+                    sphereObject.transform.rotation = Quaternion.Euler(0, 0, zAngle - 90f);
+                }
             isMoving = true;
             getNewPathSucceed = false;
         }
@@ -236,7 +274,7 @@ public class MainMacroscopic : DontDestorySingleton<MainMacroscopic>
     }
 
     // 从AI组拿到的数据
-    struct transmitData
+    public struct transmitData
     {
         public float speed;
         public Vector3[] path;
@@ -270,6 +308,13 @@ public class MainMacroscopic : DontDestorySingleton<MainMacroscopic>
             //Debug.Log("未收到 'succeed'，暂停执行");
             //}
         }
+
+    }
+
+    IEnumerator WaitAndPrint(float waitTime)
+    {
+        // 等待 waitTime 秒
+        yield return new WaitForSeconds(waitTime);
 
     }
 

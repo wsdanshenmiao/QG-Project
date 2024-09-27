@@ -285,7 +285,7 @@ MonoBehaviour:
   m_text: "\u8FD4\u56DE"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: b9c3ece80d55043489a9c0b78c1330e6, type: 2}
-  m_sharedMaterial: {fileID: 6919320606892369015, guid: b9c3ece80d55043489a9c0b78c1330e6, type: 2}
+  m_sharedMaterial: {fileID: -3892072689541334849, guid: b9c3ece80d55043489a9c0b78c1330e6, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []

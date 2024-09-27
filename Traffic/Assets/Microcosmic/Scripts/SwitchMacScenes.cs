@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -22,6 +20,7 @@ public class SwitchMacScenes : MonoBehaviour
 
     private void ReturnMainScene()
     {
+        ScenesManager2D.Instance.SceneAsync = 0;
         SendMessageToParent(false, 0);
         SceneManager.LoadSceneAsync(0);
     }

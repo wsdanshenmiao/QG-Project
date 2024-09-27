@@ -6,7 +6,7 @@ using UnityEngine;
 using System.Linq;
 using UnityEngine.Networking;
 
-
+/*
 // 弃用
 public class ColorManager3D : Singleton<ColorManager3D>
 {
@@ -30,6 +30,8 @@ public class ColorManager3D : Singleton<ColorManager3D>
     private string m_IPAddress = "http://139.159.156.117:8080/get_position";
     private string m_Json;
 
+    private NativeWebSocket.WebSocket m_WebSocket;
+
     private NodeWeight m_PosWeights;
     private List<NodeData> m_NodeDataList = new();
     private List<Renderer> m_RoadDataList = new();
@@ -38,7 +40,7 @@ public class ColorManager3D : Singleton<ColorManager3D>
     {
         //StartCoroutine(GetRequestFromServer());
         //m_PosWeights = JsonUtility.FromJson<NodeWeight>(m_Json); ;
-
+        
         m_PosWeights = ReadFromJson(m_FilePath);
 
         Shader shader = Shader.Find("Traffic/ChangeColorByWeight");
@@ -73,9 +75,9 @@ public class ColorManager3D : Singleton<ColorManager3D>
     {
         List<Transform> childRoad = new();
         Roads.GetComponentsInChildren<Transform>(childRoad);
-        foreach (Transform t in childRoad)
+        foreach(Transform t in childRoad)
         {
-            if (t.name != "Road")
+            if(t.name != "Road")
             {
                 Renderer roadRenderer = t.GetComponent<Renderer>();
                 roadRenderer.material = new Material(shader);
@@ -145,7 +147,7 @@ public class ColorManager3D : Singleton<ColorManager3D>
     private void UpdateNodeWeight(float minWeight, float difference)
     {
         //����ȡ��Ȩ�ظ����ڵ㲢���²���
-        foreach (Vector3 posWeight in m_PosWeights.PosWeight)
+        foreach(Vector3 posWeight in m_PosWeights.PosWeight)
         {
             NodeData nodeData = m_NodeDataList.Find(data =>
             {
@@ -213,10 +215,12 @@ public class ColorManager3D : Singleton<ColorManager3D>
         }
 
     }
-
-
+    
+    
     private bool V3EqualsV2(Vector2 two, Vector3 three)
     {
         return two.x.Equals(three.x) && two.y.Equals(three.y);
     }
 }
+
+*/
