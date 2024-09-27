@@ -1,0 +1,13 @@
+fileFormatVersion: 2
+guid: a2d3247f5b38d2141acaa458e66bf43f
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - meltShader: {fileID: 4800000, guid: 11862f20420322c41ae541468f1f8c89, type: 3}
+  - noiseTex: {fileID: 2800000, guid: 198c95288c281f343be1ba9f8a9d7a9e, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

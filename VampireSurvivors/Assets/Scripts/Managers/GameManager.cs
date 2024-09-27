@@ -33,14 +33,22 @@ public class GameManager : DontDestorySingleton<GameManager>
 
     private void ManageGame()
     {
+        if(PlayerControl.Instance.IsDeath()){
+            Debug.Log("Lost");
+            CurrentWaveNumber = 0;
+            BeginGame = false;
+            SceneManager.LoadSceneAsync(0);
+        }
+        if(CurrentWaveNumber > MaxWaveNumber){
+            Debug.Log("Win");
+            CurrentWaveNumber = 0;
+            BeginGame = false;
+            SceneManager.LoadSceneAsync(0);
+        }
         CurrentWaveTime -= Time.deltaTime;
         if(CurrentWaveTime <= 0){
             CurrentWaveTime = WaveTime;
             ++CurrentWaveNumber;
-        }
-        if(CurrentWaveNumber > MaxWaveNumber){
-            CurrentWaveNumber = 0;
-            SceneManager.LoadSceneAsync(0);
         }
     }
 }

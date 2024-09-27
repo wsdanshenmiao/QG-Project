@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 7230314215290127167}
   - component: {fileID: 6321909269061509078}
   - component: {fileID: 7007689837620768107}
+  - component: {fileID: 5474997127494562434}
   m_Layer: 6
   m_Name: Ghost
   m_TagString: Enemy
@@ -97,6 +98,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9bb99dbc81e75eb458b6d59df79f7ebc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  EnemyBullets:
+  - {fileID: 8049041584346119623, guid: dd0e969e9b9e7ea40a810f5b257e2bb3, type: 3}
 --- !u!58 &6321909269061509078
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -159,6 +162,26 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
+--- !u!114 &5474997127494562434
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 124775726670728532}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a2d3247f5b38d2141acaa458e66bf43f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  meltShader: {fileID: 4800000, guid: 11862f20420322c41ae541468f1f8c89, type: 3}
+  beginMelt: 0
+  meltTime: 2
+  edgeWidth: 0.06
+  m_ThresholdValue: 0
+  noiseTex: {fileID: 2800000, guid: 198c95288c281f343be1ba9f8a9d7a9e, type: 3}
+  colorFirst: {r: 0, g: 0, b: 1, a: 1}
+  colorSecond: {r: 0, g: 0, b: 1, a: 1}
 --- !u!1 &7189120398093911784
 GameObject:
   m_ObjectHideFlags: 0
@@ -211,7 +234,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: e3fb0be6a5451a94cb970d7e5e9594a8, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

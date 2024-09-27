@@ -238,6 +238,7 @@ MonoBehaviour:
   m_BulletPrefab:
   - {fileID: 1651705582250992719, guid: a7230f487d6b52848a50b3385c6f2b4e, type: 3}
   - {fileID: 6881462673773284562, guid: 30c5cafe02532d34889f493bf8220dc1, type: 3}
+  - {fileID: 8049041584346119623, guid: dd0e969e9b9e7ea40a810f5b257e2bb3, type: 3}
 --- !u!4 &64631794
 Transform:
   m_ObjectHideFlags: 0
@@ -664,7 +665,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   MapData: {fileID: 11400000, guid: 5c5d3ea2a95ecb545884137cf905b706, type: 2}
-  MaxWaveNumber: 20
+  MaxWaveNumber: 40
   CurrentWaveNumber: 5
   WaveTime: 60
   CurrentWaveTime: 0
@@ -698,6 +699,8 @@ GameObject:
   - component: {fileID: 307116055}
   - component: {fileID: 307116059}
   - component: {fileID: 307116058}
+  - component: {fileID: 307116061}
+  - component: {fileID: 307116060}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -812,6 +815,38 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &307116060
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 307116054}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 38e63bf153ce4f54fa0654cabf1cc98b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GaussionBlurShader: {fileID: 4800000, guid: ba6ff04361f00484ba7807dba04f8597, type: 3}
+  interator: 3
+  blurSpread: 0.6
+  downSample: 2
+--- !u!114 &307116061
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 307116054}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 10618e1dec07a4a4b96df5ff5d485d07, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  edgeDetectionShader: {fileID: 4800000, guid: 76953a132653d6648bc2cfa60c85f085, type: 3}
+  edgeOnly: 1
+  edgeColor: {r: 0, g: 0, b: 0, a: 1}
+  backgroundColor: {r: 1, g: 1, b: 1, a: 1}
 --- !u!1 &319180647
 GameObject:
   m_ObjectHideFlags: 0
@@ -1187,7 +1222,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 397712832}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 03d5dca757b0bbf4abc3e44e3dce83e1, type: 3}
   m_Name: 
@@ -98305,22 +98340,6 @@ PrefabInstance:
       propertyPath: Enemys
       value: 
       objectReference: {fileID: 397712832}
-    - target: {fileID: 3587880444940954517, guid: 09ea6037e0788e54db04ca166566fef8, type: 3}
-      propertyPath: baseBullet
-      value: 
-      objectReference: {fileID: 1651705582250992719, guid: a7230f487d6b52848a50b3385c6f2b4e, type: 3}
-    - target: {fileID: 3587880444940954517, guid: 09ea6037e0788e54db04ca166566fef8, type: 3}
-      propertyPath: Bullets.Array.size
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 3587880444940954517, guid: 09ea6037e0788e54db04ca166566fef8, type: 3}
-      propertyPath: Bullets.Array.data[0]
-      value: 
-      objectReference: {fileID: 1651705582250992719, guid: a7230f487d6b52848a50b3385c6f2b4e, type: 3}
-    - target: {fileID: 3587880444940954517, guid: 09ea6037e0788e54db04ca166566fef8, type: 3}
-      propertyPath: Bullets.Array.data[1]
-      value: 
-      objectReference: {fileID: 6881462673773284562, guid: 30c5cafe02532d34889f493bf8220dc1, type: 3}
     - target: {fileID: 6197488657530126210, guid: 09ea6037e0788e54db04ca166566fef8, type: 3}
       propertyPath: m_Name
       value: Hunter

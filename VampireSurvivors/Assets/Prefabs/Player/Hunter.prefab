@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 4336335309946740718}
   - component: {fileID: 6556985949463441676}
   - component: {fileID: 6381314282870864855}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Hunter
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -72,13 +72,18 @@ MonoBehaviour:
   CurrentArmor: 0
   CurrentDamege: 0
   CurrentSpeed: 0
+  IsDeath: 0
+  CanMove: 1
   TemplatePlayerData: {fileID: 11400000, guid: b46d85d9613e3604294f577414f52af4, type: 2}
   PlayerData: {fileID: 11400000, guid: b46d85d9613e3604294f577414f52af4, type: 2}
   Experience: 0
-  Grad: 0
+  MaxExperience: 100
+  Level: 0
   Gold: 0
   KillNum: 0
   TotalKillNum: 0
+  IsMove: 0
+  IsAttack: 0
 --- !u!95 &4336335309946740718
 Animator:
   serializedVersion: 5
@@ -172,7 +177,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2787736275409119773}
   - component: {fileID: 1174244453684781223}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Sprite
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -233,7 +238,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -170837393
-  m_SortingLayer: 4
+  m_SortingLayer: 5
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 8ff60eb0c81f744dcacb2893aa847274, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}

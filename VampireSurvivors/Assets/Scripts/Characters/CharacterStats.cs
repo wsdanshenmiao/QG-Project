@@ -107,6 +107,8 @@ public class CharacterStats : MonoBehaviour
         CurrentArmor = BaseArmor;
         CurrentDamege = BaseDamege;
         CurrentSpeed = BaseSpeed;
+        IsDeath = false;
+        CanMove = true;
     }
 
     /// <summary>

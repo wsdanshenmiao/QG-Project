@@ -28,16 +28,18 @@ public class PlayerControl : Singleton<PlayerControl>
         if(m_PlayerStats.IsAttack){
             Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             mousePos.z = 0;
-            BulletLauncher.Instance.LaunchBullet(
+            Bullets bullet = BulletLauncher.Instance.LaunchBullet(
                 m_PlayerStats,
                 Array.Find<Bullets>(Bullets, data => { return data.BulletData.Type == "BaseBullet"; }).BulletData,
                 Enemys.GetComponentInChildren<Transform>(), mousePos, bulletPos, 1 << 6);
+            BulletPool.RotateBullet(bullet);
         }
         if(Input.GetMouseButtonDown(1)){
-            BulletLauncher.Instance.LaunchBullet(
+            Bullets bullet = BulletLauncher.Instance.LaunchBullet(
                 m_PlayerStats,
                 Array.Find<Bullets>(Bullets, data => { return data.BulletData.Type == "FireBallBullet"; }).BulletData,
                 transform, transform.position, transform.position, 1 << 6);
+            BulletPool.RotateBullet(bullet);
         }
         m_MoveInput.x = Input.GetAxisRaw("Horizontal");
         m_MoveInput.y = Input.GetAxisRaw("Vertical");
@@ -84,5 +86,10 @@ public class PlayerControl : Singleton<PlayerControl>
             m_Anim.SetBool("Run", m_PlayerStats.IsMove);
             m_Anim.SetBool("Attack", false);
         }
+    }
+
+    public bool IsDeath()
+    {
+        return m_PlayerStats.IsDeath;
     }
 }

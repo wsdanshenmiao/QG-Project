@@ -3,6 +3,7 @@ using UnityEngine.UI;
 
 public abstract class BaseEnemyControl : MonoBehaviour
 {
+    public Bullets[] EnemyBullets;
     protected EnemyStats m_Enemystats;
     protected Transform m_PlayerTransform;
     protected Animator m_Anim;

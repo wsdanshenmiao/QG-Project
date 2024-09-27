@@ -23,12 +23,14 @@ public class BulletLauncher : Singleton<BulletLauncher>
         }
     }
 
-    public void LaunchBullet(CharacterStats launcher, BulletData_SO bulletData, Transform target, Vector3 mousePos, Vector3 pos, int layerMask)
-    {        
+    public Bullets LaunchBullet(CharacterStats launcher, BulletData_SO bulletData, Transform target, Vector3 mousePos, Vector3 pos, int layerMask)
+    {
+        Bullets bullet = null;
         BulletPool bulletPool;
         if (BulletPools.TryGetValue(bulletData.Type, out bulletPool)){
-            bulletPool.CreateBullet(launcher, bulletData, target, mousePos, pos, layerMask);
+            bullet = bulletPool.CreateBullet(launcher, bulletData, target, mousePos, pos, layerMask);
         }
+        return bullet;
     }
 
 }
