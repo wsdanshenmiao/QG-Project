@@ -6,7 +6,7 @@ namespace DSM {
 
 bool Chunk::m_EnableFrustumCulling = false;				// 视锥体裁剪关闭
 int Chunk::m_Seed = 20050113;								// 默认种子
-int Chunk::m_StoreChunkRadius = 2;						// 超过此半径的区块被卸载
+int Chunk::m_StoreChunkRadius = 4;						// 超过此半径的区块被卸载
 Block Chunk::m_Block[5] = {};
 
 void Chunk::InitBlock(TextureManager& tManager, ModelManager& mManager)

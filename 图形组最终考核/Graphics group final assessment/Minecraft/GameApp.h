@@ -95,7 +95,7 @@ private:
 
     std::vector<DSM::Chunk> m_Chunk;                            // 区块
     char m_ChunkSeed[9] = {};                                          // 区块种子的字符串
-    int m_ViewRange = 2;                                        // 视距半径
+    int m_ViewRange = 3;                                        // 视距半径
     int m_StoreChunkNum;                                        // 存储的区块个数
     bool m_EnableChunkFrustumCulling = true;                    // 区块的视锥体剔除
     std::vector<std::future<void>> m_Futures;
